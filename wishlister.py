@@ -73,7 +73,6 @@ def parse_wishlist(session, wishlist_url):
     wishlist = []
     page = request_page(session, wishlist_url)
 
-    wishlist_domain = urlparse(wishlist_url).netloc
     parse_wishlist_page(session, wishlist, page)
 
     return wishlist
@@ -191,15 +190,10 @@ def find_item_price_from_other_sellers_on_amazon_box(soup):
     element = elements[0]
     price_el = element.find("span", attrs={"class": "a-offscreen"})
 
-    # Case if just on prime and so delivery is free
-    if not price_el:
-        base_price = float(wishlist_item["price"].lstrip("£"))
-        delivery_price = 0
-    else:
-        base_price = float(price_el.text.lstrip("£"))
-        delivery_el = element.find("span", attrs={"class": "a-color-secondary a-size-base"})
-        delivery_price = delivery_el.text if delivery_el else "+ £0 delivery"
-        delivery_price = float(delivery_price.lstrip("+ £").rstrip(" delivery"))
+    base_price = float(price_el.text.lstrip("£"))
+    delivery_el = element.find("span", attrs={"class": "a-color-secondary a-size-base"})
+    delivery_price = delivery_el.text if delivery_el else "+ £0 delivery"
+    delivery_price = float(delivery_price.lstrip("+ £").rstrip(" delivery"))
 
     full_price = base_price + delivery_price
     return full_price
@@ -207,7 +201,8 @@ def find_item_price_from_other_sellers_on_amazon_box(soup):
 
 def find_item_price_from_format_selection_box(soup):
     format_selection_box_el = soup.find_all(
-        "span", attrs={"class": "a-button a-button-selected a-spacing-mini a-button-toggle format"}
+        "span",
+        attrs={"class": "a-button a-button-selected a-spacing-mini a-button-toggle format"},
     )
     if len(format_selection_box_el) != 1:
         return
@@ -243,10 +238,10 @@ def run_test_cases(session):
     for test_case in STRATEGY_TEST_CASES:
         delay()
         response = request_page(session, test_case)
-        price = find_item_price(response)
+        find_item_price(response)
 
 
 if __name__ == "__main__":
     session = start_session()
-    # run_test_cases(session)
+    run_test_cases(session)
     run_wishlist_scraper(session)

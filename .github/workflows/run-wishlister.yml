@@ -28,10 +28,9 @@ jobs:
         python -m pip install --upgrade pip
         pip install ruff poetry
         poetry install
-        poetry shell
     - name: Lint with Ruff
       run: |
         ruff check
     - name: Run script
       run: |
-        python wishlister.py
+        poetry run python wishlister.py

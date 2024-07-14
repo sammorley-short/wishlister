@@ -11,7 +11,7 @@ DELAY_MIN = 1000
 DELAY_MAX = 2000
 WISHLIST_URL = "https://www.amazon.co.uk/hz/wishlist/ls/1BXMRCIR7311A"
 WISHLIST_DOMAIN = urlparse(WISHLIST_URL).netloc
-PRICE_THRESHOLD = 17
+PRICE_THRESHOLD = 16.50
 
 @dataclass
 class WishlistItem:

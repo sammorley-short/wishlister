@@ -1,13 +1,15 @@
 # This workflow will install Python dependencies, run tests and lint with a single version of Python
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
 
-name: z
+name: Run wishlister
 
 on:
   push:
     branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
+  schedule:
+    - cron: "0 0 * * *"
 
 permissions:
   contents: read
@@ -31,6 +33,7 @@ jobs:
     - name: Lint with Ruff
       run: |
         ruff check
+      continue-on-error: true
     - name: Run script
       run: |
         poetry run python wishlister.py

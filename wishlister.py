@@ -1,5 +1,6 @@
 import random
 import time
+from pprint import pprint
 from dataclasses import dataclass
 from urllib.parse import urlparse
 
@@ -25,6 +26,10 @@ class PageRequestError(Exception):
 
 class PriceNotFoundError(Exception):
     "Thrown if no strategy returns a price."
+
+
+class LowPriceFound(Exception):
+    "Thrown when one or more low price found."
 
 
 def start_session():
@@ -66,7 +71,9 @@ def run_wishlist_scraper(session):
         if price <= PRICE_THRESHOLD:
             items_below_threshold.append(wishlist_item)
 
-    print(items_below_threshold)
+    if items_below_threshold:
+        pprint(items_below_threshold)
+        raise LowPriceFound
 
 
 def parse_wishlist(session, wishlist_url):

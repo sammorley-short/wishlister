@@ -11,7 +11,7 @@ DELAY_MIN = 1000
 DELAY_MAX = 2000
 WISHLIST_URL = "https://www.amazon.co.uk/hz/wishlist/ls/1BXMRCIR7311A"
 WISHLIST_DOMAIN = urlparse(WISHLIST_URL).netloc
-
+PRICE_THRESHOLD = 17
 
 @dataclass
 class WishlistItem:
@@ -57,7 +57,6 @@ def run_wishlist_scraper(session):
     print("Wishlist parsed")
     delay()
 
-    PRICE_THRESHOLD = 16
     items_below_threshold = []
     for wishlist_item in wishlist:
         url = wishlist_item.url

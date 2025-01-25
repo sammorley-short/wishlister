@@ -2,6 +2,7 @@ import random
 import time
 from pprint import pprint
 from dataclasses import dataclass
+from operator import attrgetter
 from urllib.parse import urlparse
 
 import bs4
@@ -54,25 +55,31 @@ def start_session():
 def run_wishlist_scraper(session):
     print("\nRunning wishlist scraping")
     wishlist = parse_wishlist(session, WISHLIST_URL)
-    print("Wishlist parsed")
+    print(f"Wishlist parsed; {len(wishlist)} found")
     delay()
 
     items_below_threshold = []
-    for wishlist_item in wishlist:
+    for i, wishlist_item in enumerate(wishlist):
         url = wishlist_item.url
         response = request_page(session, url)
         price = find_item_price(response)
         wishlist_item.price = price
 
         name = wishlist_item.title
-        print(f"{name}: {price}")
+        print(f"{i + 1}) {name}: £{price:.2f}")
 
         if price <= PRICE_THRESHOLD:
             items_below_threshold.append(wishlist_item)
 
+    for wishlist_item in sorted(wishlist, key=attrgetter("price"), reverse=True):
+        print("£{:6.2f}: {: >}".format(wishlist_item.title, wishlist_item.price))
+
     if items_below_threshold:
+        print("Bargains found!")
         pprint(items_below_threshold)
         raise LowPriceFound
+    else:
+        print("No bargains found! :(")
 
 
 def parse_wishlist(session, wishlist_url):
@@ -231,7 +238,7 @@ def run_test_cases(session):
     print("\nRunning test cases")
     STRATEGY_TEST_CASES = [
         # Sob's Air Guitar -> only prime
-        "https://www.amazon.co.uk/dp/B0C91YY6XD",
+        # "https://www.amazon.co.uk/dp/B0C91YY6XD",
         # Sadurn's Radiator -> only non-prime new
         "https://www.amazon.co.uk/dp/B09RMBJHV5",
         # Ohtis' Curve of Earth -> non-prime new and used

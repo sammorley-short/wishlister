@@ -72,7 +72,7 @@ def run_wishlist_scraper(session):
             items_below_threshold.append(wishlist_item)
 
     for wishlist_item in sorted(wishlist, key=attrgetter("price"), reverse=True):
-        print("£{:6.2f}: {: >}".format(wishlist_item.title, wishlist_item.price))
+        print("£{:6.2f}: {: >}".format(wishlist_item.price, wishlist_item.title))
 
     if items_below_threshold:
         print("Bargains found!")

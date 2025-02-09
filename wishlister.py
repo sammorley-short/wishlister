@@ -1,8 +1,9 @@
 import random
 import time
-from pprint import pprint
 from dataclasses import dataclass
 from operator import attrgetter
+from pprint import pprint
+from typing import Optional
 from urllib.parse import urlparse
 
 import bs4
@@ -12,13 +13,14 @@ DELAY_MIN = 1000
 DELAY_MAX = 2000
 WISHLIST_URL = "https://www.amazon.co.uk/hz/wishlist/ls/1BXMRCIR7311A"
 WISHLIST_DOMAIN = urlparse(WISHLIST_URL).netloc
-PRICE_THRESHOLD = 16.50
+PRICE_THRESHOLD = 17
+
 
 @dataclass
 class WishlistItem:
     title: str
     url: str
-    price: float = None
+    price: Optional[float] = None
 
 
 class PageRequestError(Exception):
@@ -27,10 +29,6 @@ class PageRequestError(Exception):
 
 class PriceNotFoundError(Exception):
     "Thrown if no strategy returns a price."
-
-
-class LowPriceFound(Exception):
-    "Thrown when one or more low price found."
 
 
 def start_session():
@@ -76,8 +74,9 @@ def run_wishlist_scraper(session):
 
     if items_below_threshold:
         print("Bargains found!")
+        for bargain in items_below_threshold:
+            print("£{:6.2f}: {: >} ({})".format(wishlist_item.price, wishlist_item.title, wishlist_item.url))
         pprint(items_below_threshold)
-        raise LowPriceFound
     else:
         print("No bargains found! :(")
 
@@ -136,7 +135,7 @@ def parse_wishlist_page(session, wishlist, page):
         # Check for pagination / next page of wishlist.
         see_more_el = soup.find(
             "a",
-            attrs={"class": "a-size-base a-link-nav-icon " "a-js g-visible-no-js wl-see-more"},
+            attrs={"class": "a-size-base a-link-nav-icon a-js g-visible-no-js wl-see-more"},
         )
         if see_more_el:
             # Pace request rate to avoid bot detection

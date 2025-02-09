@@ -9,6 +9,7 @@ package-mode = false
 python = "^3.9"
 requests = "^2.32"
 beautifulsoup4 = "^4.12"
+yagmail = "^0.15.293"
 
 [build-system]
 requires = ["poetry-core"]

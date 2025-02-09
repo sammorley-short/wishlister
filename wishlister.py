@@ -9,6 +9,8 @@ from urllib.parse import urlparse
 import bs4
 import requests
 
+from emailer import send_email
+
 DELAY_MIN = 1000
 DELAY_MAX = 2000
 WISHLIST_URL = "https://www.amazon.co.uk/hz/wishlist/ls/1BXMRCIR7311A"
@@ -50,7 +52,7 @@ def start_session():
     return session
 
 
-def run_wishlist_scraper(session):
+def run_wishlist_scraper(session, email=False):
     print("\nRunning wishlist scraping")
     wishlist = parse_wishlist(session, WISHLIST_URL)
     print(f"Wishlist parsed; {len(wishlist)} found")
@@ -74,9 +76,17 @@ def run_wishlist_scraper(session):
 
     if items_below_threshold:
         print("Bargains found!")
-        for bargain in items_below_threshold:
-            print("£{:6.2f}: {: >} ({})".format(wishlist_item.price, wishlist_item.title, wishlist_item.url))
-        pprint(items_below_threshold)
+        bargain_prinout = "\n".join(
+            [
+                "£{:6.2f}: {: >} ({})".format(bargain.price, bargain.title, bargain.url)
+                for bargain in items_below_threshold
+            ]
+        )
+        print(bargain_prinout)
+
+        if email:
+            send_email("Bargain records found!", bargain_prinout)
+
     else:
         print("No bargains found! :(")
 
@@ -256,4 +266,4 @@ def run_test_cases(session):
 if __name__ == "__main__":
     session = start_session()
     run_test_cases(session)
-    run_wishlist_scraper(session)
+    run_wishlist_scraper(session, email=False)

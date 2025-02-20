@@ -264,6 +264,11 @@ def run_test_cases(session):
 
 
 if __name__ == "__main__":
-    session = start_session()
-    run_test_cases(session)
-    run_wishlist_scraper(session, email=False)
+    try:  
+        # Desired behaviour
+        session = start_session()
+        run_test_cases(session)
+        run_wishlist_scraper(session, email=True)
+    except Exception as error:  
+        # Email reporting on failure
+        send_email("Error running wishlister.py", str(error))

@@ -184,7 +184,11 @@ def find_item_price_from_format_selection_box_no_prime(element):
     if len(price_element) != 1:
         return
 
-    price = float(price_element[0].text.split("£")[1].rstrip())
+    price_text = price_element[0].text
+    if "£" not in price_text:
+        return
+
+    price = float(price_text.split("£")[1].rstrip())
     return price
 
 
@@ -246,10 +250,10 @@ def find_item_price_in_element(element, find_strategies):
 def run_test_cases(session):
     print("\nRunning test cases")
     STRATEGY_TEST_CASES = [
-        # Sob's Air Guitar -> only prime
+        # Sob's Air Guitar -> only prime (currently unavailable)
         # "https://www.amazon.co.uk/dp/B0C91YY6XD",
-        # Sadurn's Radiator -> only non-prime new
-        "https://www.amazon.co.uk/dp/B09RMBJHV5",
+        # Sadurn's Radiator -> only non-prime new (currently unavailable)
+        # "https://www.amazon.co.uk/dp/B09RMBJHV5",
         # Ohtis' Curve of Earth -> non-prime new and used
         "https://www.amazon.co.uk/dp/B07M7ZXD8B",
         # Nina Simone's Black Gold
@@ -272,3 +276,4 @@ if __name__ == "__main__":
     except Exception as error:  
         # Email reporting on failure
         send_email("Error running wishlister.py", str(error))
+        raise error
